@@ -25,7 +25,7 @@ RUN case "$TARGETARCH" in \
 
 FROM debian:bookworm-slim
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates libstdc++6 \
+    ca-certificates libstdc++6 libopus0 libopusfile0 \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=builder /server /usr/local/bin/tts-api
 COPY --from=piper-dl /opt/piper /opt/piper
