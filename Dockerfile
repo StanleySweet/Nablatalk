@@ -1,16 +1,18 @@
-FROM --platform=$BUILDPLATFORM golang:1.22-alpine AS builder
-RUN apk add --no-cache git gcc musl-dev opus-dev opusfile-dev
+FROM --platform=$BUILDPLATFORM golang:1.22-bookworm AS builder
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc pkgconf libopus-dev libopusfile-dev \
+    && rm -rf /var/lib/apt/lists/*
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
 ARG TARGETOS TARGETARCH
-RUN GOOS=$TARGETOS GOARCH=$TARGETARCH CGO_ENABLED=1 \
-    go build -ldflags '-linkmode external -extldflags "-static"' \
-    -o /server ./cmd/server/
+RUN GOOS=$TARGETOS GOARCH=$TARGETARCH CGO_ENABLED=1 go build -o /server ./cmd/server/
 
-FROM alpine:3.19 AS piper-dl
-RUN apk add --no-cache curl
+FROM debian:bookworm-slim AS piper-dl
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates curl \
+    && rm -rf /var/lib/apt/lists/*
 ARG TARGETARCH
 RUN case "$TARGETARCH" in \
     arm64) ARCH=aarch64 ;; \
