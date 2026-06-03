@@ -1,5 +1,5 @@
 FROM --platform=$BUILDPLATFORM golang:1.22-alpine AS builder
-RUN apk add --no-cache git libopus-dev
+RUN apk add --no-cache git opus-dev
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
@@ -19,7 +19,7 @@ RUN case "$TARGETARCH" in \
     tar xz -C /usr/local/bin/ piper
 
 FROM alpine:3.19
-RUN apk add --no-cache ca-certificates libopus
+RUN apk add --no-cache ca-certificates opus
 COPY --from=builder /server /usr/local/bin/tts-api
 COPY --from=piper-dl /usr/local/bin/piper /usr/local/bin/piper
 EXPOSE 8765
