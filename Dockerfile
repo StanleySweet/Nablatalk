@@ -1,5 +1,7 @@
-FROM --platform=$BUILDPLATFORM golang:1.22-alpine AS builder
-RUN apk add --no-cache git gcc musl-dev opus-dev opusfile-dev
+FROM --platform=$BUILDPLATFORM golang:1.22-bookworm AS builder
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc pkgconf libopus-dev libopusfile-dev \
+    && rm -rf /var/lib/apt/lists/*
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
@@ -7,8 +9,10 @@ COPY . .
 ARG TARGETOS TARGETARCH
 RUN GOOS=$TARGETOS GOARCH=$TARGETARCH CGO_ENABLED=1 go build -o /server ./cmd/server/
 
-FROM alpine:3.19 AS piper-dl
-RUN apk add --no-cache curl
+FROM debian:bookworm-slim AS piper-dl
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates curl \
+    && rm -rf /var/lib/apt/lists/*
 ARG TARGETARCH
 RUN case "$TARGETARCH" in \
     arm64) ARCH=aarch64 ;; \
@@ -19,8 +23,10 @@ RUN case "$TARGETARCH" in \
     tar xz -C /opt && \
     chmod +x /opt/piper/piper
 
-FROM alpine:3.19
-RUN apk add --no-cache ca-certificates opus opusfile
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates libopus0 libopusfile0 \
+    && rm -rf /var/lib/apt/lists/*
 COPY --from=builder /server /usr/local/bin/tts-api
 COPY --from=piper-dl /opt/piper /opt/piper
 ENV LD_LIBRARY_PATH=/opt/piper \
