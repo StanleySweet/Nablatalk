@@ -16,7 +16,8 @@ RUN case "$TARGETARCH" in \
     *) ARCH=x86_64 ;; \
     esac; \
     curl -fsSL "https://github.com/rhasspy/piper/releases/download/2023.11.14-2/piper_linux_${ARCH}.tar.gz" | \
-    tar xz -C /usr/local/bin/ piper
+    tar xz -C /usr/local/bin/ piper && \
+    chmod +x /usr/local/bin/piper
 
 FROM alpine:3.19
 RUN apk add --no-cache ca-certificates opus opusfile
