@@ -5,7 +5,7 @@ services:
       - "8765:8765"
     environment:
       - TTS_PORT=8765
-      - TTS_PIPER_BIN=/usr/local/bin/piper
+      - TTS_PIPER_BIN=/opt/piper/piper
       - TTS_PIPER_MODEL_DIR=/models
       - TTS_PIPER_SAMPLE_RATE=22050
       - TTS_ELEVENLABS_KEY=${TTS_ELEVENLABS_KEY:-}
