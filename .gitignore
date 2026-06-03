@@ -1,0 +1,5 @@
+/server
+/bin/
+/models/
+.env
+*.wav
