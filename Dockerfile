@@ -25,6 +25,5 @@ COPY --from=builder /server /usr/local/bin/tts-api
 COPY --from=piper-dl /opt/piper /opt/piper
 ENV LD_LIBRARY_PATH=/opt/piper \
     ESPEAK_DATA_PATH=/opt/piper/espeak-ng-data
-RUN ln -s /opt/piper/piper /usr/local/bin/piper
 EXPOSE 8765
 ENTRYPOINT ["tts-api"]

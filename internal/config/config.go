@@ -24,7 +24,7 @@ type Config struct {
 func Load() *Config {
 	return &Config{
 		Port:             envInt("TTS_PORT", 8765),
-		PiperBin:         envStr("TTS_PIPER_BIN", "/usr/local/bin/piper"),
+		PiperBin:         envStr("TTS_PIPER_BIN", "/opt/piper/piper"),
 		PiperModelDir:    envStr("TTS_PIPER_MODEL_DIR", "/models"),
 		PiperSampleRate:  envInt("TTS_PIPER_SAMPLE_RATE", 22050),
 		PiperLengthScale: envFloat("TTS_PIPER_LENGTH_SCALE", 1.0),
