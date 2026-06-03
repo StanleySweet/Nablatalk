@@ -1,5 +1,5 @@
 FROM --platform=$BUILDPLATFORM golang:1.22-alpine AS builder
-RUN apk add --no-cache git opus-dev
+RUN apk add --no-cache git gcc musl-dev opus-dev
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
