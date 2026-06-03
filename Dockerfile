@@ -19,7 +19,7 @@ RUN case "$TARGETARCH" in \
     tar xz -C /usr/local/bin/ piper
 
 FROM alpine:3.19
-RUN apk add --no-cache ca-certificates opus
+RUN apk add --no-cache ca-certificates opus opusfile
 COPY --from=builder /server /usr/local/bin/tts-api
 COPY --from=piper-dl /usr/local/bin/piper /usr/local/bin/piper
 EXPOSE 8765
