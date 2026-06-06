@@ -8,6 +8,9 @@ services:
       - TTS_PIPER_BIN=/opt/piper/piper
       - TTS_PIPER_MODEL_DIR=/models
       - TTS_PIPER_SAMPLE_RATE=22050
+      - TTS_PIPER_LENGTH_SCALE=1.3
+      - TTS_PIPER_NOISE_SCALE=0.3
+      - TTS_PIPER_NOISE_W_SCALE=0.4
       - TTS_ELEVENLABS_KEY=${TTS_ELEVENLABS_KEY:-}
     volumes:
       - ./models:/models:ro

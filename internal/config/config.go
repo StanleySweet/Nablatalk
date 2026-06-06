@@ -27,7 +27,7 @@ func Load() *Config {
 		PiperBin:         envStr("TTS_PIPER_BIN", "/opt/piper/piper"),
 		PiperModelDir:    envStr("TTS_PIPER_MODEL_DIR", "/models"),
 		PiperSampleRate:  envInt("TTS_PIPER_SAMPLE_RATE", 22050),
-		PiperLengthScale: envFloat("TTS_PIPER_LENGTH_SCALE", 1.0),
+		PiperLengthScale: envFloat("TTS_PIPER_LENGTH_SCALE", 1.3),
 		PiperNoiseScale:  envFloat("TTS_PIPER_NOISE_SCALE", 0.667),
 		PiperNoiseWScale: envFloat("TTS_PIPER_NOISE_W_SCALE", 0.8),
 		ElevenLabsKey:    envStr("TTS_ELEVENLABS_KEY", ""),

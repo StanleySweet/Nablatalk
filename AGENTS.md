@@ -12,6 +12,10 @@ pynab (Pi Zero) ──WebSocket──► tts-api (Pi 4, Docker)
 
 Go server, single static binary. Each engine runs in a goroutine, streams Opus frames (20ms, AppVoIP) back over the WebSocket.
 
+On the pynab side, `nabd/sound.py` implements a `tts:` URI scheme: when `preload()` sees `tts:<sentence>`, it connects to the tts-api WebSocket, receives Opus frames, decodes them to PCM via ctypes/libopus, writes a WAV temp file, and returns the path — the existing `_play_wav_file()` pipeline handles the rest. Each service daemon checks its own `use_tts` config boolean; when true, `perform()` builds a `tts:` URI instead of MP3 paths.
+
+All 6 primary services have field `use_tts = models.BooleanField(default=False)` in their Config model plus a corresponding Django migration.
+
 ## Protocol
 
 Connect via WebSocket to `/ws`, send one JSON message:
@@ -38,6 +42,7 @@ Server responds with:
 | `TTS_PIPER_NOISE_SCALE` | `0.667` | Voice variation (0 = robotic, 1 = natural) |
 | `TTS_PIPER_NOISE_W_SCALE` | `0.8` | Prosody variation (0 = monotone) |
 | `TTS_ELEVENLABS_KEY` | — | ElevenLabs API key (omit to disable) |
+| `TTS_ADDR` | `pi4.local:8765` | pynab tts-api WebSocket address |
 
 ### Voices
 
@@ -139,6 +144,32 @@ go run ./cmd/server/
 ├── Makefile                        # build / lint / vet / fmt / clean
 └── .env.example
 ```
+
+### pynab (pynab repo)
+
+```
+├── nabttsd/                        # TTS daemon — RFID/ASR voice command service
+│   ├── nabttsd.py                  # WebSocket → Opus → decode → ALSA playback
+│   ├── models.py                   # Config model: text, voice, engine
+│   ├── nlu/intent_en.yaml          # EN NLU intents ("speak a sentence")
+│   ├── nlu/intent_fr.yaml          # FR NLU intents
+│   ├── templates/nabttsd/settings.html
+│   ├── urls.py, views.py           # Web settings UI
+│   └── migrations/0001_initial.py
+├── nabd/sound.py                   # tts: URI scheme in preload()
+├── nabd/nabd.conf                  # TTS_ADDR env var
+├── nabcommon/
+│   ├── nabservice.py               # NabService.send_tts() helper
+│   └── typing.py                   # NabdPacket type
+├── nab8balld/                      # use_tts toggle + tts: in perform()
+├── nabclockd/                      # use_tts toggle + tts: in chime()
+├── nabweatherd/                    # use_tts toggle + tts: in perform_additional()
+├── nabairqualityd/                 # use_tts toggle + tts: in perform_additional()
+├── nabsurprised/                   # use_tts toggle + tts: in _do_perform()
+└── nabmastodond/                   # use_tts toggle + tts: in play_message()
+```
+
+Each service's `models.py` has `use_tts = models.BooleanField(default=False)` with a matching migration.
 
 ## Development
 
