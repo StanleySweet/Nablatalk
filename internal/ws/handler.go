@@ -12,9 +12,10 @@ import (
 )
 
 type clientMsg struct {
-	Text   string `json:"text"`
-	Engine string `json:"engine"`
-	Voice  string `json:"voice"`
+	Text        string   `json:"text"`
+	Engine      string   `json:"engine"`
+	Voice       string   `json:"voice"`
+	LengthScale *float64 `json:"length_scale,omitempty"`
 }
 
 type serverMsg struct {
@@ -72,7 +73,10 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	frames, err := engine.Synthesize(r.Context(), req.Text, req.Voice)
+	opts := tts.SynthesisOptions{
+		LengthScale: req.LengthScale,
+	}
+	frames, err := engine.Synthesize(r.Context(), req.Text, req.Voice, opts)
 	if err != nil {
 		writeErr(conn, err.Error())
 		return

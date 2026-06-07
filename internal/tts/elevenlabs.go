@@ -23,7 +23,7 @@ func NewElevenLabs(apiKey string) *ElevenLabs {
 }
 
 // Synthesize calls the ElevenLabs TTS API and streams Opus-encoded frames.
-func (e *ElevenLabs) Synthesize(ctx context.Context, text, voice string) (<-chan Frame, error) {
+func (e *ElevenLabs) Synthesize(ctx context.Context, text, voice string, _ SynthesisOptions) (<-chan Frame, error) {
 	ch := make(chan Frame)
 
 	if voice == "" || voice == "default" {

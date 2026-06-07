@@ -36,7 +36,7 @@ func NewPiper(bin, modelDir string, sampleRate int, lengthScale, noiseScale, noi
 }
 
 // Synthesize runs the piper binary and streams Opus-encoded frames.
-func (p *Piper) Synthesize(ctx context.Context, text, voice string) (<-chan Frame, error) {
+func (p *Piper) Synthesize(ctx context.Context, text, voice string, opts SynthesisOptions) (<-chan Frame, error) {
 	ch := make(chan Frame)
 
 	if voice == "" || voice == "default" {
@@ -50,12 +50,17 @@ func (p *Piper) Synthesize(ctx context.Context, text, voice string) (<-chan Fram
 		return nil, fmt.Errorf("piper: %w", err)
 	}
 
+	lengthScale := p.lengthScale
+	if opts.LengthScale != nil {
+		lengthScale = *opts.LengthScale
+	}
+
 	args := []string{
 		"--model", modelPath,
 		"--output-raw",
 	}
-	if p.lengthScale != 1.0 {
-		args = append(args, "--length-scale", fmt.Sprintf("%g", p.lengthScale))
+	if lengthScale != 1.0 {
+		args = append(args, "--length-scale", fmt.Sprintf("%g", lengthScale))
 	}
 	if p.noiseScale != 0.667 {
 		args = append(args, "--noise-scale", fmt.Sprintf("%g", p.noiseScale))

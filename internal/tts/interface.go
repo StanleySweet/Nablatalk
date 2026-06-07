@@ -11,7 +11,12 @@ type Frame struct {
 	SampleRate int
 }
 
+// SynthesisOptions carries per-request parameters that override engine defaults.
+type SynthesisOptions struct {
+	LengthScale *float64
+}
+
 // Engine synthesises text into a stream of Opus audio frames.
 type Engine interface {
-	Synthesize(ctx context.Context, text, voice string) (<-chan Frame, error)
+	Synthesize(ctx context.Context, text, voice string, opts SynthesisOptions) (<-chan Frame, error)
 }
